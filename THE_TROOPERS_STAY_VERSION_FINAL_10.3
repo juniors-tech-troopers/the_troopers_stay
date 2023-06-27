@@ -1,0 +1,1121 @@
+Proceso LOGIN_THE_TROOPERS
+	Definir usuarios, idioma, alojamiento, aux Como Caracter;
+	Definir cantidad_usuarios, i, j, k Como Entero;
+	//Determinamos la matriz usuarios de Dimension 2 y Alojamiento con Dimension 3.
+	Dimension usuarios[10,4], Alojamiento[10,6,3];
+	
+	///DATOS DE PRUEBA (GRABADOS EN CODIGO DURO)- Usuario N°0 - cantidad de usuarios: 1
+	cantidad_usuarios<-1; 
+	usuarios[0,0] <- "Usuario1";
+	usuarios[0,1] <- "123456";
+	usuarios[0,2] <- "francopaganoo2015@gmail.com";
+	usuarios[0,3] <- "locador";
+
+	
+	//Inicializamos la matriz de alojamiento para evitar futuros errores
+	para i<-0 Hasta 9 Hacer
+		para j<-0 Hasta 5 Hacer
+			para k<-0 Hasta 2 Hacer
+				Alojamiento[i,j,k] <- "0";
+			FinPara
+		FinPara
+	FinPara
+	
+	///MENU IDIOMA - SE MUESTRA POR UNICA VEZ AL ENTRAR A LA APP.
+	//Este repetir permite validad que el dato ingresado sea del tipo numerico
+	//y espesificamente limitado a las opciones que muestra el menu
+	Repetir
+		Limpiar Pantalla;
+		Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+		Escribir "|                      SELECCIONE UN IDIOMA                         |";
+		Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+		Escribir "|      1.- Español (Argentino)    |       2.- Ingles                |";
+		Escribir "*---------------------------------*---------------------------------*";
+		Escribir "|                          3 - Yodaspeak                            |";
+		Escribir "*-------------------------------------------------------------------*";
+		
+		leer aux; 
+		si aux = "3" Entonces
+			
+			Escribir "*---------------------------------*-----------------------------------*";
+			Escribir "|Idioma no disponible, elegir debes entre inglés y español, por favor.|";
+			Escribir "*---------------------------------------------------------------------*";
+			Esperar Tecla;
+		SiNo
+			si aux <> "1" y aux <> "2" Entonces
+				error(6);
+				Esperar Tecla;
+			FinSi
+		FinSi
+	Hasta Que aux = "2" o aux="1"
+	Segun ConvertirANumero(aux) Hacer
+		1: 
+			idioma <- "Español";
+		2: 
+			idioma <- "Ingles"; 
+	FinSegun
+	
+	Login(usuarios, cantidad_usuarios, idioma, alojamiento);
+	creditos();
+	
+FinProceso
+
+///MENU DE INGRESO - PERMITE EL INGRESO DE USUARIO EXISTENTES O EL REGISTRO DE NUEVOS.
+SubProceso Login(usuarios Por Referencia, cantidad_usuarios Por Referencia, idioma Por Valor, Alojamiento Por Referencia)
+	Definir opcion Como caracter;
+	
+	//En el menu de ingreso a la app tenemos las dos opciones principales 
+	//Este repetir permite validad que el dato ingresado sea del tipo numerico
+	//y espesificamente limitado a las opciones que muestra el menu
+	Repetir
+		Limpiar Pantalla;
+		si idioma = "Ingles" Entonces
+			Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+			Escribir "|  WELCOME TO THE TROOPERS STAY   |";
+			Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+			Escribir "|  1.- LOGIN                      |";
+			Escribir "*---------------------------------*";
+			Escribir "|  2.- REGISTER                   |";
+			Escribir "*---------------------------------*";
+			Escribir "|  3.- EXIT		                 |";
+			Escribir "*---------------------------------*";
+		SiNo
+			si idioma = "Español" Entonces
+				Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+				Escribir "| BIENVENIDO A THE TROOPERS STAY  |";
+				Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+				Escribir "|  1.- INGRESAR                   |";
+				Escribir "*---------------------------------*";
+				Escribir "|  2.- REGISTRARSE                |";
+				Escribir "*---------------------------------*";
+				Escribir "|  3.- SALIR                      |";
+				Escribir "*---------------------------------*";
+			FinSi
+		FinSi
+		leer opcion; 
+		si opcion <> "1" y opcion <> "2" y opcion <> "3" y opcion <> "1138" Entonces
+			error(6);
+			Esperar Tecla;
+		FinSi
+	Hasta Que opcion = "1" o opcion = "2" o opcion = "3" o opcion = "1138"
+	
+	Segun ConvertirANumero(opcion) Hacer
+		1: 
+			Ingresar(cantidad_usuarios, usuarios, idioma, Alojamiento);
+		2: 
+			registrarse(cantidad_usuarios, usuarios, idioma, Alojamiento);
+		3: 
+			Limpiar Pantalla;
+			Escribir "               Que la Fuerza te acompañe siempre en tu camino."; 
+		1138:  
+			mostrar(cantidad_usuarios, usuarios, idioma, Alojamiento);
+		De Otro Modo:
+			Login(usuarios, cantidad_usuarios, idioma, alojamiento);
+	FinSegun
+	
+FinSubProceso
+///Subproceso analiza si el usuario a ingresar ya se encuentra registrado en el sistema, validando sus datos y prosiguiendo con el ingreso.
+SubProceso ingresar(cantidad_usuarios Por Referencia, usuarios Por Referencia, idioma Por Valor, Alojamiento Por Referencia)
+	Definir usuario Como Caracter;
+	Definir i, aux Como Entero;
+	Definir encontrado Como Logico;
+	
+	//Le pedimos que ingrese un usuario, el cual se verificara.
+	Limpiar Pantalla;
+	si idioma = "Ingles" Entonces
+		Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+		Escribir "|  WELCOME TO THE TROOPERS STAY   |";
+		Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+		Escribir "|    USER: " Sin Saltar;
+	SiNo
+		si idioma = "Español" Entonces
+			Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+			Escribir "| BIENVENIDO A THE TROOPERS STAY  |";
+			Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+			Escribir "|    USUARIO: " Sin Saltar;
+		FinSi
+	FinSi
+	Leer usuario;
+	
+	//Verificamos si el usuario ingresado se encuentra entre los que estan en la base
+	encontrado<-falso; 
+	para i<-0 Hasta cantidad_usuarios-1 Hacer
+		si usuario = usuarios[i,0] Entonces
+			encontrado<-Verdadero;
+			aux <- i;
+		FinSi
+	FinPara
+	
+	//En caso de estar, se procede a pedir la contraseña, sino debe intentar denuevo enviandolo denuevo al login principal. 
+	si  encontrado = Verdadero Entonces
+		Contrasena(usuarios, cantidad_usuarios, usuario, aux, idioma, Alojamiento);
+	SiNo
+		Limpiar Pantalla;
+		
+		si idioma = "Ingles" Entonces
+			Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+			Escribir "|  WELCOME TO THE TROOPERS STAY   |";
+			Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+			Escribir "|    INCORRECT USER               |";
+			Escribir "|    Try again                    |";
+			Escribir "*---------------------------------*";
+		SiNo
+			si idioma = "Español" Entonces
+				Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+				Escribir "| BIENVENIDO A THE TROOPERS STAY  |";
+				Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+				Escribir "|    USUARIO INCORRECTO           |";
+				Escribir "|    Intente denuevo              |"; 
+				Escribir "*---------------------------------*";
+			FinSi
+		FinSi
+		Esperar Tecla;
+		Login(usuarios, cantidad_usuarios, idioma, alojamiento);
+	FinSi
+	
+FinSubProceso
+
+SubProceso Contrasena(usuarios Por Referencia, cantidad_usuarios Por Referencia, usuario Por Valor, aux por valor, idioma Por Valor, Alojamiento Por Referencia)
+	Definir intentos Como entero;
+	Definir pasword Como Caracter;
+	Definir correcta Como Logico;
+	
+	intentos <- 0;
+	correcta <- falso;
+	//Para la contraseña arrastramos un dato del sub proceso del usuario, ya que en la matriz,
+	//el primer dato representa al ususario y el segundo los dato relacionados con el mismo,
+	// como lo seria en este caso la contraseña. 
+	//Este SubProceso se repetira 3 veces en caso que la contraseña sea ingresada de forma incorrecta. 
+	Repetir
+		Limpiar Pantalla;
+		
+		si idioma = "Ingles" Entonces
+			Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+			Escribir "|  WELCOME TO THE TROOPERS STAY   |";
+			Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+			Escribir "|    USER: ", usuario;
+			Escribir "*---------------------------------*";
+			Escribir "|    PASSWORD: " Sin Saltar;
+		SiNo
+			si idioma = "Español" Entonces
+				Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+				Escribir "| BIENVENIDO A THE TROOPERS STAY  |";
+				Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+				Escribir "|    USUARIO: ", usuario;
+				Escribir "*---------------------------------*";
+				Escribir "|    CONTRASEÑA: " Sin Saltar;
+			FinSi
+		FinSi
+		Leer pasword;
+		
+		si pasword = usuarios[aux,1] Entonces
+			correcta <- Verdadero;
+		SiNo
+			intentos <- intentos + 1;
+			si correcta = Falso y intentos < 3 Entonces
+				Limpiar Pantalla; 
+				
+				si idioma = "Ingles" Entonces
+					Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+					Escribir "|  WELCOME TO THE TROOPERS STAY   |";
+					Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+					Escribir "|    USER: ", usuario;
+					Escribir "*---------------------------------*";
+					Escribir "|    Remaining attempts: ", 3 - intentos;
+					Esperar Tecla;
+				SiNo
+					si idioma = "Español" Entonces
+						Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+						Escribir "| BIENVENIDO A THE TROOPERS STAY  |";
+						Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+						Escribir "|    USUARIO: ", usuario;
+						Escribir "*---------------------------------*";
+						Escribir "|    CONTRASEÑA INCORRECTA";
+						Escribir "|    Intentos restantes: ", 3 - intentos;
+						Esperar Tecla;
+					FinSi
+				FinSi
+			FinSi
+		FinSi
+	Hasta Que intentos > 2 o correcta = Verdadero
+	
+	si correcta = Verdadero y intentos = 3 o correcta = Verdadero Entonces
+		falsoSistemaCarga(0);
+		si usuarios[aux,3] = "locador" Entonces
+			Definir cantidadmueble Como Entero;
+			cantidadmueble <- ConvertirANumero(Alojamiento[aux,0,0]); 
+			menuingraeso(aux, Alojamiento, cantidadmueble);
+		SiNo
+			si usuarios[aux,3] = "locatario" Entonces
+				menuloca(Alojamiento,cantidad_usuarios, usuarios);
+			FinSi
+			
+		FinSi
+	SiNo
+		Limpiar Pantalla;
+		
+		si idioma = "Ingles" Entonces
+			Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+			Escribir "|  WELCOME TO THE TROOPERS STAY   |";
+			Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+			Escribir "The entered password is incorrect";
+			Escribir "Press ENTER to go back to the beginning";
+		SiNo
+			si idioma = "Español" Entonces
+				Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+				Escribir "| BIENVENIDO A THE TROOPERS STAY  |";
+				Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+				Escribir "La contraseña ingresada es incorrecta";
+				Escribir "Presiona ENTER para volver al inicio";
+			FinSi
+		FinSi
+		
+		Esperar Tecla;
+		Login(usuarios, cantidad_usuarios, idioma, Alojamiento);
+	FinSi
+	Login(usuarios, cantidad_usuarios, idioma, Alojamiento);
+FinSubProceso
+
+SubProceso registrarse(cantidad_usuarios, usuarios, idioma,Alojamiento Por Referencia)
+	Definir dato Como Caracter;
+	Definir i, aux Como Entero;
+	Definir verificacion Como Logico;
+	
+	//Si seleeciona la opcion de registrarse, lo envia al subproceso de registrarse, en el cual
+	//como primera instancia se ingresa un correo.
+	Limpiar Pantalla;
+	
+	si idioma = "Ingles" Entonces
+		Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+		Escribir "|  WELCOME TO THE TROOPERS STAY   |";
+		Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+		Escribir "//____________REGISTER___________//";
+		Escribir "|    Enter your email" Sin Saltar;
+	SiNo
+		si idioma = "Español" Entonces
+			Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+			Escribir "| BIENVENIDO A THE TROOPERS STAY  |";
+			Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+			Escribir "//____________REGISTRO___________//";
+			Escribir "|    Ingrese su email" Sin Saltar;
+		FinSi
+	FinSi
+	leer dato;
+
+	//si el correo ya esta relacionado con un usuario, el mismo notificara. 
+	//En caso contrario, procedera a completar los datos para crear la nueva cuenta. 
+	verificacion<-falso;
+	para i <- 0 Hasta cantidad_usuarios-1 Hacer
+		si dato = usuarios[i,2] Entonces
+			verificacion <- Verdadero;
+			aux <- i;
+		FinSi
+	FinPara
+	
+	//Tambien en caso de crear un nuevo usuario, no puede ser igual a uno existente en la base, por lo 
+	//que se va a repetir el proceso de ingresar usuario hasta que ingrese uno que no se encuentre en 
+	//la base de datos. 
+	si verificacion = Verdadero Entonces
+		
+		si idioma = "Ingles" Entonces
+			Escribir "The entered email is already registered with the username: ", usuarios[aux,0];
+		SiNo
+			si idioma = "Español" Entonces
+				Escribir "El correo ingresado ya se encuentra registrado con el ususario: ", usuarios[aux,0];
+			FinSi
+		FinSi
+		Esperar Tecla;
+		registrarse(cantidad_usuarios, usuarios, idioma, Alojamiento);
+	SiNo
+		Limpiar Pantalla;
+		cantidad_usuarios <- cantidad_usuarios + 1;
+		//Se guarda el correo en la nueva posicion. 
+		usuarios[cantidad_usuarios -1,2] <- dato;
+		Repetir
+			verificacion <- falso;
+			Limpiar Pantalla;
+			
+			si idioma = "Ingles" Entonces
+				Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+				Escribir "|  WELCOME TO THE TROOPERS STAY   |";
+				Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+				Escribir "//____________REGISTER___________//";
+				Escribir "|    ENTER A USERNAME: " Sin Saltar;
+			SiNo
+				si idioma = "Español" Entonces
+					Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+					Escribir "| BIENVENIDO A THE TROOPERS STAY  |";
+					Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+					Escribir "//__________REGISTRARSE__________//";
+					Escribir "|    INGRESE UN USUARIO: " Sin Saltar;
+				FinSi
+			FinSi
+			
+			leer dato; 
+			
+			para i<-0 Hasta cantidad_usuarios-2 Hacer
+				si dato = usuarios[i,0] entonces 
+					si idioma = "Ingles" Entonces
+						Escribir "The entered username already exists. Please enter another one";
+					SiNo
+						si idioma = "Español" Entonces
+							Escribir "El usuario ingresado ya existe, porfavor, ingrese otro";
+						FinSi
+					FinSi
+					Esperar Tecla;
+					verificacion <- Verdadero;
+				FinSi
+			FinPara
+			
+		Hasta Que verificacion = falso; 
+		//En caso de encontrar un usuario no repetido, se asigna a la matriz
+		usuarios[cantidad_usuarios-1,0]<-dato;
+		
+		//se procede con la contraseña
+		si idioma = "Ingles" Entonces
+			Escribir "|    ENTER A PASSWORD: " Sin Saltar;
+		SiNo
+			si idioma = "Español" Entonces
+				Escribir "|    INGRESE UNA CONTRASEÑA: " Sin Saltar;
+			FinSi
+		FinSi
+		leer usuarios[cantidad_usuarios-1,1];
+		
+		Repetir
+			Limpiar Pantalla;
+			si idioma = "Ingles" Entonces
+				Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+				Escribir "| BIENVENIDO A THE TROOPERS STAY  |";
+				Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+				Escribir "//__________REGISTRARSE__________//";
+				Escribir "*_____Select the type of user_____*";
+				Escribir "|  1.- LANDLORD                   |";
+				Escribir "*---------------------------------*";
+				Escribir "|  2.- TENANT                     |";
+				Escribir "*---------------------------------*";
+			SiNo
+				si idioma = "Español" Entonces
+					Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+					Escribir "| BIENVENIDO A THE TROOPERS STAY  |";
+					Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+					Escribir "//__________REGISTRARSE__________//";
+					Escribir "*__Seleccione el tipo de usuario__*";
+					Escribir "|  1.- LOCADOR                    |";
+					Escribir "*---------------------------------*";
+					Escribir "|  2.- LOCATARIO                  |";
+					Escribir "*---------------------------------*";
+				FinSi
+			FinSi
+			
+			leer dato; 
+			si dato <> "1" y dato <> "2" Entonces
+				error(6);
+				Esperar Tecla;
+			FinSi
+		Hasta Que dato = "2" o dato = "1"
+		
+		Segun ConvertirANumero(dato) hacer
+			1: 
+				usuarios[cantidad_usuarios -1,3] <- "locador";
+			2:
+				usuarios[cantidad_usuarios -1,3] <- "locatario";
+		FinSegun
+		
+		
+		//SIMULAMOS UN SISTEMA DE CARGA DE DATOS
+		falsoSistemaCarga(0); 
+		
+		si idioma = "Ingles" Entonces
+			Escribir "";
+			Escribir "";
+			Escribir "The registration was successful.";
+			Escribir "Press ENTER to continue.";
+		SiNo
+			si idioma = "Español" Entonces
+				Escribir "";
+				Escribir "";
+				Escribir "El regitro se realizo de forma correcta";
+				Escribir "Presione ENTER para continuar";
+			FinSi
+		FinSi
+		Esperar Tecla;
+		Login(usuarios, cantidad_usuarios, idioma, alojamiento);
+	FinSi
+	
+FinSubProceso
+///Subproceso de falso sistema de carga 
+SubProceso falsoSistemaCarga(x Por Valor) 
+	si x <= 100 Entonces
+		Limpiar Pantalla;
+		Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+		Escribir "          THE TROOPERS STAY             ";
+		Escribir "          NIVEL DE FUERZA: ", x,"%      ";
+		Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+		Esperar 1 Segundos;
+		falsoSistemaCarga(x+20);
+	FinSi
+FinSubProceso
+///Subproceso para nosotros, para llevar un control de los usuarios registrados.
+SubProceso mostrar(cantidad_usuarios por valor, usuarios Por Referencia, idioma Por Valor, Alojamiento Por Referencia)
+	Definir i, j, k Como Entero;
+	Limpiar Pantalla;
+	Escribir "                         ¡BIENVENIDO MIS CREADORES!";
+	Escribir "En esta galáctica aventura, me complace presentarles una lista que contiene los datos";
+	Escribir "de los valientes usuarios registrados en nuestra comunidad.";
+	Esperar 1 Segundos;
+	Escribir "";
+	Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+	Escribir "| USUARIO             | CONTRASEÑA          | CORREO                        | ROL           |";
+	Escribir "*---------------------*---------------------*-------------------------------*---------------*";
+	Para i<-0 Hasta cantidad_usuarios-1 Hacer
+		Para j<-0 Hasta 3 Hacer
+			Escribir Sin Saltar "| ", usuarios[i,j];
+			si j=0 o j=1 Entonces
+				para k<-0 Hasta 19-Longitud(usuarios[i,j]) Hacer
+					Escribir Sin Saltar " ";
+				FinPara
+			SiNo
+				si j = 3 Entonces
+					para k<-0 Hasta 13-Longitud(usuarios[i,j]) Hacer
+						Escribir Sin Saltar " ";
+					FinPara
+				SiNo
+					para k<-0 Hasta 29-Longitud(usuarios[i,j]) Hacer
+						Escribir Sin Saltar " ";
+					FinPara
+				FinSi
+			FinSi
+		FinPara
+		Escribir Sin Saltar "|";
+		Escribir "";
+		Escribir "*---------------------*---------------------*-------------------------------*---------------*";
+	FinPara
+	
+	Esperar Tecla;
+	Login(usuarios, cantidad_usuarios, idioma, alojamiento);
+FinSubProceso
+
+///MENU LOCADO
+SubProceso menuingraeso(aux Por Valor, Alojamiento Por Referencia, cantidadmueble Por Referencia)
+	Definir k Como Entero;	
+	Definir num,  menu Como Caracter;
+	Definir salir Como Logico;
+	num <- "1234";
+	Alojamiento[aux,0,0] <- ConvertirATexto(cantidadmueble); 
+	salir <- falso;
+	Limpiar Pantalla;
+	Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+	Escribir "|          MENU LOCADOR           |";
+	Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+	Escribir "|  1.- Registrar alojamiento      |";
+	Escribir "*---------------------------------*";
+	Escribir "|  2.- Ver alojamiento registrados|";
+	Escribir "*---------------------------------*";
+	Escribir "|  3.- Eliminar alojamiento       |";
+	Escribir "*---------------------------------*";
+	Escribir "|  4.- Salir                      |";
+	Escribir "*---------------------------------*";
+	leer menu;
+	//Este repetir permite validad que el dato ingresado sea del tipo numerico
+	//y espesificamente limitado a las opciones que muestra el menu
+	Repetir
+		para k<-0 Hasta 4 Hacer
+			si menu = Subcadena(num, k, k) Entonces
+				salir <- Verdadero;
+			FinSi
+		FinPara 
+		si salir = falso Entonces
+			error(6);
+			Esperar Tecla;
+			menuingraeso(aux, Alojamiento, cantidadmueble);
+		FinSi
+	Hasta Que salir = Verdadero
+	
+	segun ConvertirANumero(menu) Hacer
+		1: 
+			tipoaljamiento(Alojamiento, aux, cantidadmueble);
+		2: 
+			mostrar_aloj(aux, Alojamiento, cantidadmueble, menu);
+		3: 
+			Eliminar(aux, Alojamiento,cantidadmueble, menu);
+		4: 
+			Escribir "*----------------------------------------------*";
+			Escribir "|    Que la Fuerza te envie al menu principal  |";
+			Escribir "*----------------------------------------------*";
+			Escribir "";
+			Esperar tecla;
+	FinSegun
+	
+FinSubProceso
+
+SubProceso tipoaljamiento(Alojamiento Por Referencia, aux por valor, cantidadmueble Por Referencia)
+	Definir cantidad, k Como Entero;
+	Definir menu, num Como Caracter;
+	Definir salir Como Logico;
+	Limpiar Pantalla;
+	num <- "12345";
+	salir <- Falso;
+	//El usuario que se registre como locado, puede ingresar como maximo 5 ALOJAMIENTOS (POR EL MOMENTO)
+	si cantidadmueble < 5 Entonces
+		Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+		Escribir "|          MENU LOCADOR           |";
+		Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+		Escribir "|  1.- Habitacion de Hotel        |";
+		Escribir "*---------------------------------*";
+		Escribir "|  2.- Cabaña                     |";
+		Escribir "*---------------------------------*";
+		Escribir "|  3.- Departamento o Casa        |";
+		Escribir "*---------------------------------*";
+		Leer menu;
+		//Este repetir permite validad que el dato ingresado sea del tipo numerico
+		//y espesificamente limitado a las opciones que muestra el menu
+		Repetir
+			para k<-0 Hasta 2 Hacer
+				si menu = Subcadena(num, k, k) Entonces
+					salir <- Verdadero;
+				FinSi
+			FinPara 
+			si salir = falso Entonces
+				error(6);
+				Esperar Tecla;
+				tipoaljamiento(Alojamiento, aux, cantidadmueble);
+			FinSi
+		Hasta Que salir = Verdadero
+		
+		Segun ConvertirANumero(menu) Hacer
+			1:
+				Limpiar Pantalla;
+				Escribir "*---------------------------------*---------------------------------*";
+				Escribir "|    Digite la cantidad de Habitaciones a ingresar                  |";
+				Escribir "*-------------------------------------------------------------------*";
+				Escribir "--------//Como maximo puede ingresar: ",5-cantidadmueble,"\\--------";
+			2:
+				Limpiar Pantalla;
+				Escribir "*---------------------------------*---------------------------------*";
+				Escribir "|    Digite la cantidad de Cabañas a ingresar                       |";
+				Escribir "*-------------------------------------------------------------------*";
+				Escribir "--------//Como maximo puede ingresar: ",5-cantidadmueble,"\\--------";
+			3:
+				Limpiar Pantalla;
+				Escribir "*---------------------------------*---------------------------------*";
+				Escribir "|    Digite la cantidad de Departamentos o Casa a ingresar          |";
+				Escribir "*-------------------------------------------------------------------*";
+				Escribir "--------//Como maximo puede ingresar: ",5-cantidadmueble,"\\--------";
+		FinSegun
+		salir <- falso;
+		Repetir
+			Leer menu;
+			para k<-0 Hasta 5 Hacer
+				si  menu = Subcadena(num, k, k) Entonces
+					
+					si ConvertirANumero(menu) > 0 y ConvertirANumero(menu) <= 5-cantidadmueble Entonces
+						salir <- Verdadero;
+					FinSi
+					
+				FinSi
+			FinPara 
+			si salir = falso Entonces
+				error(cantidadmueble);
+				Esperar Tecla;
+			FinSi
+		Hasta Que salir = Verdadero
+		cantidad <- ConvertirANumero(menu);
+		cargadealojamiento(aux,cantidadmueble, Alojamiento, cantidad);
+	SiNo
+		Escribir "NO PUEDE INGRESAR MAS ALOJAMIENTO";
+		Escribir "CANTIDAD MAXIMA 5";
+		Esperar Tecla;
+		menuingraeso(aux, Alojamiento , cantidadmueble );
+	FinSi
+	
+FinSubProceso
+
+SubProceso  cargadealojamiento(aux Por Referencia,cantidadmueble Por Valor, Alojamiento Por Referencia, cantidad Por Valor)
+	Definir i, j, k Como Entero;
+	Definir num Como Caracter;
+	definir salir Como Logico;
+	num <- "123456789";
+	//el primer parametro de la matriz es el usuario
+	cantidad <- cantidadmueble + cantidad;
+	Para i<-cantidadmueble+1 Hasta cantidad Hacer
+		
+		Escribir "Nombre del Alojamiento N°", i," "; sin saltar
+		Leer Alojamiento[aux,i,0];
+		Para j<-1 Hasta 2  Hacer
+			Si j=1 Entonces
+				salir <- falso;
+				Repetir
+					Escribir "Capacidad: "; sin saltar
+					Leer Alojamiento[aux,i,j];
+					para k<-0 Hasta 8 Hacer
+						si Subcadena(Alojamiento[aux,i,j], 0, 0) = Subcadena(num, k, k) Entonces
+							salir <- Verdadero;
+						FinSi
+					FinPara 
+					si salir = falso Entonces
+						error(7);
+					FinSi
+				Hasta Que salir = Verdadero
+			SiNo
+				salir <- falso;
+				Repetir
+					Escribir "Precio por noche $"; sin saltar
+					Leer Alojamiento[aux,i,j];
+					para k<-0 Hasta 8 Hacer
+						si Subcadena(Alojamiento[aux,i,j], 0, 0) = Subcadena(num, k, k) Entonces
+							salir <- Verdadero;
+						FinSi
+					FinPara 
+					si salir = falso Entonces
+						error(7);
+					FinSi
+				Hasta Que salir = Verdadero
+			FinSi
+		FinPara
+		Escribir "";
+	FinPara
+	
+	cantidadmueble <- cantidad;
+	menuingraeso(aux, Alojamiento, cantidadmueble);
+	
+FinSubProceso
+
+SubProceso mostrar_aloj(aux por valor, Alojamiento Por Referencia, cantidadmueble Por Valor, menu Por Valor)
+	Definir i, j Como Entero;
+	Limpiar Pantalla;
+	Escribir "               TIENE REGISTRADO ", cantidadmueble," ALOJAMIENTOS";
+	para i<-1 hasta cantidadmueble Hacer
+		Escribir "*---------------------------------*---------------------------------*";
+		Escribir "| El Alojamiento N° ", i,": ",Alojamiento[aux,i,0];
+		Para j<-1 Hasta 3-1 Hacer
+			Si j=1 Entonces
+				Escribir "| Con capacidad para: ", Alojamiento[aux,i,j];
+			SiNo
+				Escribir "| Con un preico por noche : $", Alojamiento[aux,i,j];
+				Escribir "*---------------------------------*---------------------------------*";
+			FinSi
+		FinPara
+	FinPara
+	si ConvertirANumero(menu) = 2 Entonces
+		Escribir "-------------//PRESIONE UNA TECLA PARA VOLVER AL MENU\\-------------"; 
+		Esperar tecla;
+		menuingraeso(aux, Alojamiento , cantidadmueble );
+	FinSi
+	
+FinSubProceso
+
+SubProceso Eliminar(aux Por Valor, Alojamiento Por Referencia, cantidadmueble Por Referencia, menu Por Valor)
+	Definir num, i, j Como Entero;
+	mostrar_aloj(aux, Alojamiento, cantidadmueble, menu);
+	si cantidadmueble > 0 Entonces
+		Repetir
+			Escribir "INGRESE EL NUMERO DEL ALOJAMIENTO A SER ELIMINADO"; 
+			leer num; //num representa la posicion del alojameinto a eliminar 
+		Hasta Que num>=1 y num<=cantidadmueble
+		Escribir "*-----------------------------------------------------*";
+		Escribir "El Alojamiento N°",num," SERA ELIMINADO EN 5 SEGUNDOS";
+		Escribir "*-----------------------------------------------------*";
+		para i<-num hasta cantidadmueble-1 Hacer
+			Alojamiento[aux,i,0] <- Alojamiento[aux,i+1,0];
+			para j<-0 Hasta 3-1 Hacer
+				Alojamiento[aux,i,j] <- Alojamiento[aux,i+1,j];
+			FinPara
+		FinPara
+		cantidadmueble<-cantidadmueble-1;
+		Esperar 5 Segundos; 
+		falsoSistemaCarga(0);
+		Limpiar Pantalla;
+		mostrar_aloj(aux, Alojamiento, cantidadmueble, "2");
+		//Escribir "--//Se elimino el alojamiento, PRESIONE ENTER PARA VOLVER AL MENU\\--"; 
+		Esperar Tecla;
+	SiNo
+		Escribir "--//NO POSEE ALOJAMIENTOS REGISTRADOS, PRESIONE ENTER PARA VOLVER AL MENU\\--"; 
+		Esperar Tecla;
+	FinSi
+	menuingraeso(aux, Alojamiento, cantidadmueble);
+FinSubProceso
+
+SubProceso menuloca(Alojamiento Por Referencia,cantidad_usuarios por valor, usuarios Por Referencia)
+	Definir cantidadpersonas, cantidad_vendedores, vendedores, num, k como entero;
+	Definir sugerencias, nume, menu Como Caracter;
+	Definir salir,eleccion, salir2 Como Logico;
+	Dimension vendedores[10], sugerencias[200,200];
+	nume <- "123";
+	cantidad_vendedores <- llename_esta(cantidad_usuarios, vendedores, usuarios); 
+	eleccion <- Falso;
+	salir <- falso; 
+	salir2 <- falso; 
+	
+	Repetir
+		Limpiar Pantalla;
+		Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+		Escribir "|         MENU LOCATARIO          |";
+		Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+		Escribir "|  1.- ELEGIR ALOJAMIENTO         |";
+		Escribir "*---------------------------------*";
+		Escribir "|  2.- CARRITO                    |";
+		Escribir "*---------------------------------*";
+		Escribir "|  3.- SALIR                      |";
+		Escribir "*---------------------------------*";
+		Leer menu;
+		
+		Repetir
+			para k<-0 Hasta 2 Hacer
+				si menu = Subcadena(nume, k, k) Entonces
+					salir <- Verdadero;
+				FinSi
+			FinPara 
+			si salir = falso Entonces
+				error(6);
+				Esperar Tecla;
+				menuloca(Alojamiento ,cantidad_usuarios, usuarios);
+			FinSi
+		Hasta Que salir = Verdadero
+		
+		segun ConvertirANumero(menu) hacer
+			1: 
+				seleccion(vendedores, alojamiento,cantidad_vendedores, sugerencias,eleccion,num);
+			2: 
+				Si eleccion = Falso Entonces
+					Escribir "*-----------------------------------*";
+					Escribir "|PRIMERO DEBER ELEGIR1 UN ALOJAMIENTO|";
+					Escribir "*-----------------------------------*";
+					Esperar 2 Segundos;
+					menuloca(Alojamiento ,cantidad_usuarios, usuarios);
+				SiNo
+					carrito(sugerencias, num );
+				FinSi
+			3:
+				Escribir "*----------------------------------------------*";
+				Escribir "|    Que la Fuerza te envie al menu principal  |";
+				Escribir "*----------------------------------------------*";
+				Esperar Tecla;
+				salir2 <- Verdadero;
+		FinSegun
+	Hasta Que salir2 = Verdadero;
+	
+FinSubProceso
+
+Funcion resultado <- llename_esta(cantidad_usuarios Por Valor, vendedores Por Referencia, usuarios Por Referencia) 
+	Definir resultado, i Como Entero;
+	resultado <-0; 
+	Para i<-0 Hasta cantidad_usuarios-1 Con Paso 1 Hacer
+		Si usuarios[i,3] == "locador" Entonces
+			vendedores[resultado]<-i;
+			resultado <- resultado + 1;
+		Finsi
+	FinPara
+FinFuncion
+
+SubProceso seleccion(vendedores Por Referencia, alojamiento Por Referencia, cantidad_vendedores Por Valor, sugerencias Por Referencia,eleccion Por Referencia, num Por Referencia)
+	Definir cantidad_de_personas,i ,j ,k, contador Como Entero;
+	Definir comodin, nume Como Caracter;
+	Definir salir, max Como Logico;
+	max <- Falso;
+	contador <- 0; 
+	Limpiar Pantalla;
+	nume <- "123456789";
+	salir <- falso; 
+	///HASTA ACA LLEGAMOS PERRO FALTA TERMINAR___ VAMOSSSS
+	Repetir
+		Escribir "*___________//ELEGIR ALOJAMIENTO\\_________*";
+		Escribir "|INGRESE LA CANTIDAD DE PERSONAS A ALOJARSE|";
+		leer comodin;
+		para k<-0 Hasta 8 Hacer
+			si Subcadena(comodin, 0, 0) = Subcadena(nume, k, k) Entonces
+				salir <- Verdadero;
+			FinSi
+		FinPara 
+		si salir = falso Entonces
+			error(7);
+			Esperar Tecla;
+			seleccion(vendedores, alojamiento,cantidad_vendedores, sugerencias,eleccion,num);
+		FinSi
+	Hasta Que salir = Verdadero
+	cantidad_de_personas <- ConvertirANumero(comodin);
+	falsoSistemaCarga(0);
+	Limpiar Pantalla;
+	Escribir "LOS ALOJAMIENTOS QUE POSEEN CAPACIDAD PARA ", cantidad_de_personas," O MAS SON:"; 
+	para i<-0 Hasta cantidad_vendedores-1 Hacer
+		para j<-1 Hasta 5 Hacer
+			si cantidad_de_personas <= ConvertirANumero(alojamiento[vendedores[i],j,1]) Entonces
+				max <- Verdadero;
+				contador <- contador + 1; 
+				Escribir "*---------------------------------*---------------------------------*";
+				Escribir "| El Alojamiento N° ", contador,": ", alojamiento[vendedores[i],j,0]; ;
+				Escribir "| Con capacidad para: ", alojamiento[vendedores[i],j,1]; 
+				sugerencias[contador,0] <- alojamiento[vendedores[i],j,0]; 
+				Escribir "| Con un preico por noche : $", alojamiento[vendedores[i],j,2];
+				sugerencias[0,contador] <- alojamiento[vendedores[i],j,2];
+				Escribir "*---------------------------------*---------------------------------*";
+			FinSi
+		FinPara
+	FinPara
+	Si max = falso Entonces
+		Limpiar Pantalla;
+		Escribir "*---------------------------------*--------------------------------------*";
+		Escribir "La cantidad solicitada excede la capacidad de los alojamientos existentes";
+		Escribir "Ingresa una cantidad menor";
+		Escribir "PRESIONE UNA TECLA PARA SEGUIR";
+		Escribir "*---------------------------------*--------------------------------------*";
+		Esperar Tecla;
+		
+		seleccion(vendedores, alojamiento, cantidad_vendedores, sugerencias, eleccion, num);
+	FinSi
+	
+	Escribir "INGRESE EL NUMERO DEL ALOJAMIENTO A ALQUILAR "; sin saltar
+	leer num;
+	eleccion <- Verdadero;
+	Escribir "PRESIONE ENTER PARA CONTINUAR";
+	Esperar Tecla;
+FinSubProceso
+
+//sub proceso donde se hace el calculo del monto a pagar y nos deriva a pagar
+SubProceso carrito( sugerencias Por Referencia, num Por Referencia)
+	Definir cantidadDias, totalPago,x, k Como Entero;
+	Definir menu, nume Como Caracter;
+	Definir salir, salir2 Como Logico;
+	Limpiar Pantalla;
+	Escribir "*______________//CARRITO\\______________*";
+	Escribir "|INGRESE LA CANTIDAD DE DIA/S A ALOJARSE|";
+	Leer cantidadDias;
+	totalPago <- ConvertirANumero(sugerencias[0,num]) * cantidadDias;
+	Escribir "*______________________________________*";
+	Escribir "|   El precio final por",cantidadDias," es: $ " , totalPago;
+	Escribir "*______________________________________*";
+	Escribir "PRESIONE ENTER PARA CONTINUAR";
+	Esperar Tecla;
+	Limpiar Pantalla;
+	nume <- "123456789";
+	salir <- falso; 
+	
+	Repetir
+		Limpiar Pantalla;
+		Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+		Escribir "|        FORMAS DE PAGO           |";
+		Escribir "*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
+		Escribir "|  1.- TARJETA DE DEBITO          |";
+		Escribir "*---------------------------------*";
+		Escribir "|  2.- TARJETA DE CREDITO         |";
+		Escribir "*---------------------------------*";
+		Escribir "|  3.- TRANSFERENCIA              |";
+		Escribir "*---------------------------------*";
+		Escribir "|  4.- VOLVER AL MENU LOCATORIO   |";
+		Escribir "*---------------------------------*";
+		Leer menu;
+		
+		para k<-0 Hasta 8 Hacer
+			si menu = Subcadena(nume, k, k) Entonces
+				salir <- Verdadero;
+			FinSi
+		FinPara 
+		si salir = falso Entonces
+			error(6);
+			Esperar Tecla;
+		FinSi
+	Hasta Que salir = Verdadero
+	
+	segun ConvertirANumero(menu) hacer
+		1: 
+			falsoSistemaCarga(0);
+			relleno(totalPago, menu);
+		2: 
+			falsoSistemaCarga(0);
+			cuotas(totalPago);
+		3:
+			Escribir "Alias: troopers.shoop";
+			Escribir "CBU: "Sin Saltar,"<< ";
+			alea();
+			
+		4: 
+			Escribir "*----------------------------------------------*";
+			Escribir "|    Que la Fuerza te envie al MENU LOCATARIO  |";
+			Escribir "*----------------------------------------------*";
+			Esperar tecla;
+	FinSegun
+	
+FinSubProceso
+
+//Pago y verificacion datos de tarjeta
+SubProceso relleno(totalPago Por Valor, menu)
+	Definir numt, nume Como Caracter;
+	Definir i Como Entero;
+	Definir salir Como Logico;
+	Limpiar Pantalla;
+	nume <- "123456789";
+	salir <- falso; 
+	
+	Repetir
+		Limpiar Pantalla;
+		Escribir "*------------------------------------------*";
+		Escribir "|    DATOS DE LA TARJETA                   |";
+		Escribir "*------------------------------------------*";
+		Escribir "INGRESE LOS 16 NUMEROS DE LA TARJETA";
+		Leer numT;
+		si Longitud(numT) = 16 Entonces
+			para i<-0 Hasta 8 Hacer
+				si Subcadena(numT,0,0) = Subcadena(nume, i, i) Entonces
+					salir <- Verdadero;
+				FinSi
+			FinPara 
+			si salir = falso Entonces
+				error(6);
+				Esperar Tecla;
+			FinSi
+		FinSi
+	Hasta Que salir = Verdadero
+	
+	Limpiar Pantalla;
+	Escribir "*------------------------------------------*";
+	Escribir "|    DATOS DE LA TARJETA DE DEBITO         |";
+	Escribir "*------------------------------------------*";
+	Para i<-0 Hasta Longitud(numT) Con Paso 1 Hacer
+		si i<=12 Entonces
+			Escribir Sin Saltar" x";
+		SiNo
+			Escribir Sin Saltar " ", Subcadena(numT,i,i);
+		FinSi
+	FinPara
+	Escribir "";
+	Repetir
+		Escribir "INGRESE EL CODIGO DE SEGURIDAD DE NUMEROS DE LA TARJETA 3 DIGITOS";
+		Leer numT;
+		si Longitud(numT) = 3 Entonces
+			para i<-0 Hasta 8 Hacer
+				si Subcadena(numT,0,0) = Subcadena(nume, i, i) Entonces
+					salir <- Verdadero;
+				FinSi
+			FinPara 
+			si salir = falso Entonces
+				error(6);
+				Esperar Tecla;
+			FinSi
+		FinSi
+	Hasta Que salir = Verdadero
+	
+	si menu = "1" Entonces
+		Escribir "EL TOTAL A PAGAR ES: $", totalPago;
+		Escribir "PRESIONE ENTER PARA REALIZAR EL PAGO";
+		Esperar Tecla;
+		Limpiar Pantalla;
+		Escribir "*------------------------------------------*";
+		Escribir "|    ESPERAMOS QUE DISFRUTE SU ESTADIA     |";
+		Escribir "*------------------------------------------*";
+		Esperar 2 Segundos;
+	FinSi
+	
+FinSubProceso
+
+//Generador pago en cuotas
+SubProceso cuotas(totalPago)
+	//solicitamos el subproceso de rellenar tarjeta
+	relleno(totalPago, "2");
+	
+	Definir i, pagoCuota Como Entero;
+	Escribir "Ingrese cantidad de cuotas"; Sin Saltar
+	Leer i;
+	pagoCuota <- totalPago/i;
+	Escribir "EN ",i," CUOTAS LA TARIFA POR CUOTA SERA DE: $",pagoCuota;
+	Escribir "PRESIONE ENTER PARA REALIZAR EL PAGO DE LA PRIMER CUOTA";
+	Esperar Tecla;
+	Limpiar Pantalla;
+	Escribir "*------------------------------------------*";
+	Escribir "|    ESPERAMOS QUE DISFRUTE SU ESTADIA     |";
+	Escribir "*------------------------------------------*";
+	Esperar 2 Segundos;
+FinSubProceso
+
+//Generador de CBU Aleatorio para pagar con transferencia
+SubAlgoritmo alea()
+	Definir i,x Como Entero;
+	i <- 0 ;
+	Para i<-0 Hasta 21 Con Paso 1 Hacer
+		i <- i+1;
+		x <- Aleatorio(0,9);
+		Escribir Sin Saltar x, "";
+	FinPara
+	Escribir "";
+	Escribir "PRESIONA ENTER CUANDO HALLA REALIZADO LA TRANSACCION";
+	Esperar Tecla;
+	falsoSistemaCarga(0);
+	Escribir "LA TRANSFERENCIA FUE EXITOSA";
+	Esperar 0 Segundos;
+	Limpiar Pantalla;
+	Escribir "*------------------------------------------*";
+	Escribir "|    ESPERAMOS QUE DISFRUTE SU ESTADIA     |";
+	Escribir "*------------------------------------------*";
+	Esperar 2 Segundos;;
+FinSubAlgoritmo
+
+///MENSAJE DE ERROR A LA HORA DE INGRESAR UN VALOR.
+SubProceso error(x)
+	si x = 6 Entonces
+		escribir "";
+		Escribir "*---------------------------------*---------------------------------*";
+		Escribir "  Lo siento, parece que ha ingresado incorrectamente el valor.      |";
+		Escribir "  Por favor, asegúrese de ingresar un número entre las opciones.    |";
+		Escribir "                     ¡Inténtelo de nuevo!                           |";
+		Escribir "*---------------------------------*---------------------------------*";
+		Escribir "";
+	SiNo
+		si x = 7 Entonces
+			escribir "";
+			Escribir "*---------------------------------*---------------------------------*";
+			Escribir "  Lo siento, parece que ha ingresado incorrectamente el valor.      |";
+			Escribir "  Por favor, asegúrese de ingresar un número mayor a cero.          |";
+			Escribir "                     ¡Inténtelo de nuevo!                           |";
+			Escribir "*---------------------------------*---------------------------------*";
+			Escribir "";
+		SiNo
+			escribir "";
+			Escribir "*---------------------------------*---------------------------------*";
+			Escribir "  Lo siento, parece que ha ingresado incorrectamente el valor.      |";
+			Escribir "  Por favor, asegúrese de ingresar un número mayor y menor a ",5-x,"      |";
+			Escribir "                     ¡Inténtelo de nuevo!                           |";
+			Escribir "*---------------------------------*---------------------------------*";
+			Escribir "";
+		FinSi
+	FinSi
+FinSubProceso
+SubProceso creditos()
+	Escribir "                      888888888888    8888      8888    8888      8888     8888       88888888       88888888";
+	Escribir "                    88888888888888    8888      8888    88888     8888     8888     888888888888     8888888888";
+	Escribir "                              8888    8888      8888    888888    8888     8888    8888      8888    8888    8888";
+	Escribir "                              8888    8888      8888    8888888   8888     8888    8888      8888    8888     8888";
+	Escribir "                              8888    8888      8888    8888 888  8888     8888    8888      8888    88888888888";
+	Escribir "                    8888     8888      8888    8888     8888  888 8888     8888    8888      8888    888888888";
+	Escribir "                     88888888888        8888888888      8888   8888888     8888     888888888888     8888   8888";
+	Escribir "                      88888888            888888        8888    888888     8888       88888888       8888     8888";
+	Escribir "";
+	Escribir "";
+	Escribir "                                   88888888888888      888888888888       8888888888     8888      8888";
+	Escribir "                                   88888888888888     8888888888888     8888888888888    8888      8888";
+	Escribir "                                        8888         8888              88888             8888      8888";
+	Escribir "                                        8888         888888888888      8888              88888888888888";
+	Escribir "                                        8888         888888888888      8888              88888888888888";
+	Escribir "                                        8888         8888              88888             8888      8888";
+	Escribir "                                        8888          8888888888888     8888888888888    8888      8888";
+	Escribir "                                        8888           888888888888       8888888888     8888      8888";
+	Escribir "";
+	Escribir "";
+	Escribir "     88888888888888    888888888           88888888          88888888      888888888          888888888888     88888888            88888888";
+	Escribir "     88888888888888    88888888888       888888888888      888888888888    88888888888       8888888888888     8888888888        8888    8888";
+	Escribir "         8888          8888    8888     8888      8888    8888      8888   8888    8888     8888               8888    8888      8888      ";
+	Escribir "         8888          8888     8888    8888      8888    8888      8888   8888     8888    888888888888       8888     8888       88888888";
+	Escribir "         8888          88888888888      8888      8888    8888      8888   88888888888      888888888888       88888888888             8888888";
+	Escribir "         8888          888888888        8888      8888    8888      8888   888888888        8888               888888888                  8888";
+	Escribir "         8888          8888   8888       888888888888      888888888888    8888              8888888888888     8888   8888        8888    88888";
+	Escribir "         8888          8888     8888       88888888          88888888      8888               888888888888     8888     8888        888888888";
+	Escribir "";
+	Escribir "";
+	Escribir "                                            /////////         ///////////        /////////           /////////  ";
+	Escribir "                                          ////////////       /////////////     ////////////        /////////////  ";
+	Escribir "                                         ////     /////     /////     /////   ////     /////      /////    /////";
+	Escribir "                                                 /////      /////     /////           /////               //////";
+	Escribir "                                               /////        /////     /////         /////              ///////";
+	Escribir "                                             /////          /////     /////       /////                   //////";
+	Escribir "                                           //////           /////     /////     //////            /////    /////  ";
+	Escribir "                                         /////////////       /////////////     /////////////      ///////////// ";
+	Escribir "                                       //////////////         ///////////    //////////////         /////////  ";
+FinSubProceso
+	
